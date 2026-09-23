@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Aşık Veysel AHT Yönetim</title>
+
+    <!-- Mobil Web App Ayarları -->
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="theme-color" content="#312e81">
+
+    
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        /* Mobil Kaydırma ve Dokunma İyileştirmeleri */
+
+        body { -webkit-tap-highlight-color: transparent; }
+
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+
+    </style>
+
+</head>
+
+<body class="bg-gray-100 font-sans text-gray-800 pb-12">
+
+
+
+    <!-- Üst Bar (Mobil Uyumlu) -->
+
+    <nav class="bg-indigo-900 text-white shadow-md sticky top-0 z-50 p-3">
+
+        <div class="container mx-auto flex justify-between items-center">
+
+            <h1 class="text-base font-bold flex items-center gap-2">
+
+                <i class="fa-solid fa-masks-theater text-amber-400"></i> Aşık Veysel AHT
+
+            </h1>
+
+            <div class="flex items-center gap-2">
+
+                <span id="roleBadge" class="text-xs bg-indigo-800 px-2.5 py-1 rounded-full border border-indigo-700">
+
+                    Kullanıcı: <strong id="currentUser">Mert</strong>
+
+                </span>
+
+                <button onclick="toggleUserRole()" class="text-[10px] bg-amber-500 active:bg-amber-600 text-black px-2 py-1 rounded font-bold">
+
+                    Rol Değiştir
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- Ana Konteyner -->
+
+    <div class="container mx-auto p-3 max-w-4xl">
+
+        
+
+        <!-- Mobil Tab Navigasyonu -->
+
+        <div class="grid grid-cols-3 gap-1 bg-white p-1 rounded-xl shadow-sm mb-4 border text-center text-xs font-bold">
+
+            <button onclick="switchTab('davetiye')" id="tab-davetiye" class="tab-btn py-2.5 rounded-lg bg-indigo-600 text-white shadow">
+
+                <i class="fa-solid fa-ticket block text-sm mb-0.5"></i> Davetiyeler
+
+            </button>
+
+            <button onclick="switchTab('finans')" id="tab-finans" class="tab-btn py-2.5 rounded-lg text-gray-600 hover:bg-gray-100">
+
+                <i class="fa-solid fa-wallet block text-sm mb-0.5"></i> Finans
+
+            </button>
+
+            <button onclick="switchTab('sozlesme')" id="tab-sozlesme" class="tab-btn py-2.5 rounded-lg text-gray-600 hover:bg-gray-100">
+
+                <i class="fa-solid fa-file-contract block text-sm mb-0.5"></i> Sözleşme
+
+            </button>
+
+        </div>
+
+
+
+        <!-- TAB 1: DAVETİYE VE KOLTUK YÖNETİMİ -->
+
+        <div id="sec-davetiye" class="tab-content space-y-4">
+
+            
+
+            <!-- Hızlı Form Aç/Kapat (Mobil Kolaylık) -->
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+
+                <div class="flex justify-between items-center mb-2">
+
+                    <h2 class="text-sm font-bold text-indigo-900"><i class="fa-solid fa-user-plus"></i> Yeni Davetiye Ekle</h2>
+
+                    <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500">266 Koltuk + Protokol</span>
+
+                </div>
+
+
+
+                <form id="davetiyeForm" onsubmit="handleDavetiyeEkle(event)" class="space-y-3">
+
+                    <div>
+
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">Etkinlik & Tarih</label>
+
+                        <select id="etkinlikSecim" class="w-full p-2 border rounded-lg text-xs bg-gray-50 outline-none" required>
+
+                            <option value="1">Duman Konseri - 15 Ekim 2026</option>
+
+                            <option value="2">Zengin Mutfağı Tiyatro - 20 Ekim 2026</option>
+
+                        </select>
+
+                    </div>
+
+                    
+
+                    <div class="grid grid-cols-2 gap-2">
+
+                        <div>
+
+                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Ad Soyad</label>
+
+                            <input type="text" id="adSoyad" placeholder="Ad Soyad" class="w-full p-2 border rounded-lg text-xs" required>
+
+                        </div>
+
+                        <div>
+
+                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Telefon</label>
+
+                            <div class="flex">
+
+                                <input type="tel" id="telefon" placeholder="05XX..." class="w-full p-2 border rounded-l-lg text-xs" required>
+
+                                <button type="button" onclick="rehberdenSec()" title="Rehberden Seç" class="bg-indigo-50 border border-l-0 px-2.5 rounded-r-lg text-indigo-600 active:bg-indigo-100">
+
+                                    <i class="fa-solid fa-address-book text-sm"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="grid grid-cols-2 gap-2">
+
+                        <div>
+
+                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Birim / Şirket</label>
+
+                            <input type="text" id="birim" placeholder="Birim adı" class="w-full p-2 border rounded-lg text-xs" required>
+
+                        </div>
+
+                        <div>
+
+                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Kimin Misafiri</label>
+
+                            <select id="misafirSahibi" class="w-full p-2 border rounded-lg text-xs bg-gray-50" required>
+
+                                <option value="">Seçiniz</option>
+
+                                <option value="Mert">Mert</option>
+
+                                <option value="Şebnem">Şebnem</option>
+
+                                <option value="Soykan">Soykan</option>
+
+                                <option value="Ömür">Ömür</option>
+
+                                <option value="Emrah">Emrah</option>
+
+                                <option value="Seyhan">Seyhan</option>
+
+                                <option value="Aslı">Aslı</option>
+
+                                <option value="Gökçe">Gökçe</option>
+
+                                <option value="Furkan">Furkan</option>
+
+                                <option value="Şahan">Şahan</option>
+
+                                <option value="Hazar">Hazar</option>
+
+                                <option value="Çağdaş">Çağdaş</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div>
+
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">Koltuk Tahsisi (Çoklu seçim yapabilirsiniz)</label>
+
+                        <select id="koltukSecim" multiple class="w-full p-2 border rounded-lg text-xs bg-gray-50 h-28 touch-scroll" required>
+
+                            <optgroup label="Standart Bloklar (266 Adet)">
+
+                                <option value="A2-S4">A2 Blok Sıra 4 (18 Adet)</option>
+
+                                <option value="A3-S1">A3 Blok Sıra 1 (32 Adet)</option>
+
+                                <option value="A3-S4">A3 Blok Sıra 4 (37 Adet)</option>
+
+                                <option value="A4-S1">A4 Blok Sıra 1 (32 Adet)</option>
+
+                                <option value="A4-S4">A4 Blok Sıra 4 (37 Adet)</option>
+
+                                <option value="B3-S8">B3 Blok Sıra 8 (30 Adet)</option>
+
+                                <option value="B6-S8">B6 Blok Sıra 8 (30 Adet)</option>
+
+                                <option value="C3-S1">C3 Blok Sıra 1 (25 Adet)</option>
+
+                                <option value="C8-S1">C8 Blok Sıra 1 (25 Adet)</option>
+
+                            </optgroup>
+
+                            <optgroup label="Ekstra Protokol (35'er Adet)">
+
+                                <option value="PROT-S1">Protokol Sıra 1</option>
+
+                                <option value="PROT-S2">Protokol Sıra 2</option>
+
+                                <option value="PROT-S3">Protokol Sıra 3</option>
+
+                                <option value="PROT-S4">Protokol Sıra 4</option>
+
+                                <option value="PROT-S5">Protokol Sıra 5</option>
+
+                            </optgroup>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div>
+
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">Davetiye/Bilet Belgesi Yükle</label>
+
+                        <input type="file" id="davetiyeDosya" accept=".pdf, image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 font-semibold">
+
+                    </div>
+
+
+
+                    <button type="submit" class="w-full bg-indigo-600 active:bg-indigo-700 text-white font-bold py-2.5 rounded-lg shadow transition text-xs">
+
+                        <i class="fa-solid fa-plus-circle"></i> Kaydet ve Onaya Gönder
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- Ekstra Kontenjan Kartı -->
+
+            <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl flex justify-between items-center shadow-sm">
+
+                <div>
+
+                    <h3 class="font-bold text-amber-900 text-xs"><i class="fa-solid fa-building-user"></i> Ekstra Kontenjan Girişi</h3>
+
+                    <p class="text-[10px] text-amber-700">Organizasyon firmasından ek sayı/birim ekleyin.</p>
+
+                </div>
+
+                <button onclick="ekstraKontenjanEkle()" class="bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold active:bg-amber-700">
+
+                    + Ekle
+
+                </button>
+
+            </div>
+
+
+
+            <!-- Liste Ekrani -->
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+
+                <h2 class="text-sm font-bold text-indigo-900 mb-3"><i class="fa-solid fa-list-check"></i> Dağıtılan Davetiyeler</h2>
+
+                
+
+                <div class="space-y-2" id="davetiyeListesiMobil">
+
+                    <!-- Mobil Veriler Buraya Akacak -->
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+
+
+        <!-- TAB 2: FİNANS -->
+
+        <div id="sec-finans" class="tab-content hidden space-y-4">
+
+            <!-- Finansal Özet Kartları -->
+
+            <div class="grid grid-cols-2 gap-2">
+
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+
+                    <span class="text-[10px] text-blue-600 font-semibold block">Toplam Tutar</span>
+
+                    <span id="txtToplamMaliyet" class="text-base font-bold text-blue-900">0 ₺</span>
+
+                </div>
+
+                <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+
+                    <span class="text-[10px] text-red-600 font-semibold block">Kalan Borç</span>
+
+                    <span id="txtKalan" class="text-base font-bold text-red-900">0 ₺</span>
+
+                </div>
+
+                <div class="bg-green-50 p-3 rounded-xl border border-green-100">
+
+                    <span class="text-[10px] text-green-600 font-semibold block">Alınan Ödeme</span>
+
+                    <span id="txtOdenen" class="text-base font-bold text-green-900">0 ₺</span>
+
+                </div>
+
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
+
+                    <span class="text-[10px] text-amber-600 font-semibold block">Teminat (Ayrı)</span>
+
+                    <span id="txtTeminat" class="text-base font-bold text-amber-900">0 ₺</span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Form Girişi -->
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+
+                <h2 class="text-xs font-bold text-indigo-900 border-b pb-2">Hızlı Finans Güncelleme</h2>
+
+                
+
+                <div class="grid grid-cols-2 gap-2">
+
+                    <div>
+
+                        <label class="block text-[10px] font-semibold text-gray-600">Tahsis Bedeli (₺)</label>
+
+                        <input type="number" id="tahsisBedeli" value="150000" oninput="finansHesapla()" class="w-full p-2 border rounded-lg text-xs">
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-[10px] font-semibold text-gray-600">Ek Koltuk Bedeli (₺)</label>
+
+                        <input type="number" id="ekKoltukBedeli" value="25000" oninput="finansHesapla()" class="w-full p-2 border rounded-lg text-xs">
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="grid grid-cols-2 gap-2">
+
+                    <div>
+
+                        <label class="block text-[10px] font-semibold text-gray-600">Teminat Bedeli (₺)</label>
+
+                        <input type="number" id="teminatBedeli" value="50000" oninput="finansHesapla()" class="w-full p-2 border rounded-lg text-xs">
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-[10px] font-semibold text-gray-600">Ödenen Tutar (₺)</label>
+
+                        <input type="number" id="odenenTutar" value="100000" oninput="finansHesapla()" class="w-full p-2 border rounded-lg text-xs">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TAB 3: SÖZLEŞMELER -->
+
+        <div id="sec-sozlesme" class="tab-content hidden space-y-3">
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+
+                <div class="flex justify-between items-center mb-3">
+
+                    <h2 class="text-xs font-bold text-indigo-900">Sözleşme Listesi</h2>
+
+                    <button onclick="yeniSozlesmeYukle()" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold">
+
+                        + Yükle
+
+                    </button>
+
+                </div>
+
+
+
+                <div class="space-y-2" id="sozlesmeListesi">
+
+                    <div class="p-2.5 border rounded-lg flex justify-between items-center bg-gray-50">
+
+                        <div>
+
+                            <div class="font-semibold text-xs text-gray-800">Atlantis Yapım</div>
+
+                            <div class="text-[10px] text-gray-500">Duman Konseri - PDF</div>
+
+                        </div>
+
+                        <button onclick="alert('PDF Dosyası Açılıyor...')" class="text-indigo-600 font-bold text-xs bg-indigo-50 px-2 py-1 rounded">Görüntüle</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+    <!-- Script Kodları -->
+
+    <script>
+
+        let currentRole = "Mert";
+
+        let davetiyeler = [
+
+            { id: 1, adSoyad: "Ahmet Yılmaz", telefon: "05321112233", birim: "Kültür Daire", misafirSahibi: "Şebnem", koltuklar: ["A2-S4"], onayli: true },
+
+            { id: 2, adSoyad: "Ayşe Kaya", telefon: "05059998877", birim: "Büyükşehir", misafirSahibi: "Ömür", koltuklar: ["PROT-S1"], onayli: false }
+
+        ];
+
+
+
+        function switchTab(tabName) {
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+            document.querySelectorAll('.tab-btn').forEach(el => {
+
+                el.classList.remove('bg-indigo-600', 'text-white', 'shadow');
+
+                el.classList.add('text-gray-600');
+
+            });
+
+
+
+            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+
+            const btn = document.getElementById(`tab-${tabName}`);
+
+            btn.classList.add('bg-indigo-600', 'text-white', 'shadow');
+
+            btn.classList.remove('text-gray-600');
+
+        }
+
+
+
+        function toggleUserRole() {
+
+            currentRole = (currentRole === "Mert") ? "Şebnem" : "Mert";
+
+            document.getElementById("currentUser").innerText = currentRole;
+
+            renderDavetiyeListesi();
+
+        }
+
+
+
+        function rehberdenSec() {
+
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+
+                navigator.contacts.select(['name', 'tel'], { multiple: false })
+
+                .then(contacts => {
+
+                    if (contacts.length > 0) {
+
+                        document.getElementById('telefon').value = contacts[0].tel[0];
+
+                        if(!document.getElementById('adSoyad').value) document.getElementById('adSoyad').value = contacts[0].name[0];
+
+                    }
+
+                }).catch(() => {});
+
+            } else {
+
+                alert("Telefondan doğrudan rehber simülasyonu: Telefon rehberi açılıyor...");
+
+                document.getElementById('adSoyad').value = "Örnek Kişi";
+
+                document.getElementById('telefon').value = "05320001122";
+
+            }
+
+        }
+
+
+
+        function handleDavetiyeEkle(e) {
+
+            e.preventDefault();
+
+            const koltukSelect = document.getElementById('koltukSecim');
+
+            const seciliKoltuklar = Array.from(koltukSelect.selectedOptions).map(opt => opt.value);
+
+
+
+            const yeni = {
+
+                id: Date.now(),
+
+                adSoyad: document.getElementById('adSoyad').value,
+
+                telefon: document.getElementById('telefon').value,
+
+                birim: document.getElementById('birim').value,
+
+                misafirSahibi: document.getElementById('misafirSahibi').value,
+
+                koltuklar: seciliKoltuklar,
+
+                onayli: currentRole === "Mert"
+
+            };
+
+
+
+            davetiyeler.push(yeni);
+
+            alert(yeni.onayli ? "Davetiye eklendi ve onaylandı!" : "Davetiye eklendi. Mert onayına gönderildi.");
+
+            document.getElementById('davetiyeForm').reset();
+
+            renderDavetiyeListesi();
+
+        }
+
+
+
+        function davetiyeOnayla(id) {
+
+            if(currentRole !== "Mert") {
+
+                alert("Yalnızca 'Mert' kullanıcısı onaylayabilir!");
+
+                return;
+
+            }
+
+            const item = davetiyeler.find(d => d.id === id);
+
+            if(item) { item.onayli = true; renderDavetiyeListesi(); }
+
+        }
+
+
+
+        function sendWhatsApp(id) {
+
+            const item = davetiyeler.find(d => d.id === id);
+
+            if(!item) return;
+
+
+
+            if(!item.onayli) {
+
+                alert("Onaylanmamış davetiye WhatsApp'tan gönderilemez!");
+
+                return;
+
+            }
+
+
+
+            const mesaj = `Sayın *${item.adSoyad}*, Aşık Veysel Açık Hava Tiyatrosu davetiyeniz onaylanmıştır.%0A%0A*Koltuk:* ${item.koltuklar.join(', ')}%0A*Ev Sahibi:* ${item.misafirSahibi}`;
+
+            const tel = item.telefon.replace(/[^0-9]/g, '');
+
+            window.open(`https://api.whatsapp.com/send?phone=90${tel}&text=${mesaj}`, '_blank');
+
+        }
+
+
+
+        function renderDavetiyeListesi() {
+
+            const container = document.getElementById('davetiyeListesiMobil');
+
+            container.innerHTML = '';
+
+
+
+            davetiyeler.forEach(d => {
+
+                const div = document.createElement('div');
+
+                div.className = "p-3 border rounded-xl bg-gray-50 flex justify-between items-center text-xs";
+
+                
+
+                const onayKodu = d.onayli 
+
+                    ? `<span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">Onaylı</span>`
+
+                    : `<span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">Mert Onayı Bekliyor</span>`;
+
+
+
+                let butonlar = '';
+
+                if(!d.onayli && currentRole === "Mert") {
+
+                    butonlar += `<button onclick="davetiyeOnayla(${d.id})" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold mr-1">Onayla</button>`;
+
+                }
+
+                butonlar += `<button onclick="sendWhatsApp(${d.id})" class="bg-emerald-500 text-white px-2 py-1 rounded text-[10px] font-bold"><i class="fa-brands fa-whatsapp"></i> Gönder</button>`;
+
+
+
+                div.innerHTML = `
+
+                    <div class="space-y-1">
+
+                        <div class="font-bold text-gray-900">${d.adSoyad} <span class="font-normal text-gray-500">(${d.birim})</span></div>
+
+                        <div class="text-[10px] text-gray-600">Ev Sahibi: <strong>${d.misafirSahibi}</strong> | Koltuk: <span class="font-mono font-bold text-indigo-700">${d.koltuklar.join(', ')}</span></div>
+
+                        <div>${onayKodu}</div>
+
+                    </div>
+
+                    <div class="whitespace-nowrap">${butonlar}</div>
+
+                `;
+
+                container.appendChild(div);
+
+            });
+
+        }
+
+
+
+        function finansHesapla() {
+
+            const tahsis = parseFloat(document.getElementById('tahsisBedeli').value) || 0;
+
+            const ekKoltuk = parseFloat(document.getElementById('ekKoltukBedeli').value) || 0;
+
+            const teminat = parseFloat(document.getElementById('teminatBedeli').value) || 0;
+
+            const odenen = parseFloat(document.getElementById('odenenTutar').value) || 0;
+
+
+
+            const toplam = tahsis + ekKoltuk;
+
+            const kalan = toplam - odenen;
+
+
+
+            document.getElementById('txtToplamMaliyet').innerText = toplam.toLocaleString('tr-TR') + ' ₺';
+
+            document.getElementById('txtTeminat').innerText = teminat.toLocaleString('tr-TR') + ' ₺';
+
+            document.getElementById('txtOdenen').innerText = odenen.toLocaleString('tr-TR') + ' ₺';
+
+            document.getElementById('txtKalan').innerText = kalan.toLocaleString('tr-TR') + ' ₺';
+
+        }
+
+
+
+        function ekstraKontenjanEkle() {
+
+            const b = prompt("Birim/Şirket İsmi:");
+
+            const a = prompt("Koltuk Sayısı:");
+
+            if(b && a) alert(`${b} için +${a} koltuk tanımlandı.`);
+
+        }
+
+
+
+        function yeniSozlesmeYukle() {
+
+            const isim = prompt("Firma / Kişi İsmi:");
+
+            if(isim) {
+
+                const box = document.getElementById('sozlesmeListesi');
+
+                box.innerHTML += `
+
+                    <div class="p-2.5 border rounded-lg flex justify-between items-center bg-gray-50 text-xs">
+
+                        <div>
+
+                            <div class="font-semibold text-gray-800">${isim}</div>
+
+                            <div class="text-[10px] text-gray-500">Yeni Ek Sözleşme</div>
+
+                        </div>
+
+                        <button onclick="alert('Açılıyor...')" class="text-indigo-600 font-bold text-xs bg-indigo-50 px-2 py-1 rounded">Görüntüle</button>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        window.onload = function() {
+
+            renderDavetiyeListesi();
+
+            finansHesapla();
+
+        };
+
+    </script>
+
+</body>
+
+</html>
+
